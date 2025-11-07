@@ -1,0 +1,13 @@
+The JVM process will be terminated.
+
+
+[ERROR] 에러1
+
+
+[ERROR] 에러2 -- 검토에서 제외 할 에러 [INFO] Fri, Nov  7, 2025  5:01:29 PM JVM started successfully
+[INFO] Fri, Nov  7, 2025  5:03:39 PM JVM started successfully
+[ERROR] Fri, Nov  7, 2025  5:04:10 PM 뉴에러ㅓㅓㅓ
+[ERROR] Fri, Nov  7, 2025  5:08:39 PM 뉴에러ㅓㅓㅓ
+
+
+ERROR[ERROR] 에러34 Fri, Nov  7, 2025  5:17:10 PM

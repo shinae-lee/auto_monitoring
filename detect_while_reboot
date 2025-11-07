@@ -1,0 +1,71 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+LOG_FILE="${LOG_FILE:-./JeusServer.log}"
+OUT_DIR="${OUT_DIR:-./log/jeus-exceptions}"
+
+LOGGING_START='The JVM process will be terminated.'
+
+ERROR_PATTERN='(Exception|ERROR)'
+
+MONITOR_SECS="${MONITOR_SECS:-30}"
+FOLLOW_LINES="${FOLLOW_LINES:-1}"
+EXCLUDE_FILE="${EXCLUDE_FILE:-./exclude_exceptions.txt}"
+
+if [ ! -d "$OUT_DIR" ]; then
+  mkdir -p "$OUT_DIR"
+fi
+
+timeout "$MONITOR_SECS"s  tail -n +1 -F "$LOG_FILE" \
+| gawk -v out_dir="$OUT_DIR" \
+      -v start_pat="$LOGGING_START" \
+      -v err_pat="$ERROR_PATTERN" \
+      -v win_secs="$MONITOR_SECS" \
+      -v follow="$FOLLOW_LINES" \
+      -v exfile="$EXCLUDE_FILE" '
+function outFile(ts) {
+  return out_dir "/exceptions-" strftime("%Y-%m-%d_%H-%M-%S", ts) ".log"
+}
+
+BEGIN {
+  print "Output directory: " out_dir > "/dev/stderr"
+  window_end = 0
+ 
+}
+
+{ 
+  sub(/[\r\n]+$/, "")
+  now = systime()
+  if (index($0, start_pat) > 0) {
+    window_end = now + win_secs
+    f = outFile(now)
+    print "===== [WINDOW START " strftime("%Y-%m-%d %H:%M:%S", now) "] =====" >> f
+    close(f)
+  }
+  
+  # 창이 열려있고 && 오류 패턴이 일치할 때
+  if (now <= window_end && $0 ~ err_pat) {
+    f = outFile(now)
+    print "----- Detected at " strftime("%Y-%m-%d %H:%M:%S", now) " -----" > "/dev/stderr"
+    print "----- [" strftime("%Y-%m-%d %H:%M:%S") "] DETECTED -----" >> f
+    print $0 >> f
+
+    for (i = 0; i < follow; i++) {
+      if (getline nxt > 0) {
+        print nxt >> f
+      } else {
+        break
+      }
+    }
+    print "" >> f
+
+    if (close(f) != 0) {
+      print "WARN: close() failed for " f > "/dev/stderr"; fflush("/dev/stderr")
+    }
+
+  }
+}
+'
+
+
+echo " ***** $MONITOR_SECS초 모니터링 후 자동 종료됨 *****"
