@@ -42,11 +42,28 @@ BEGIN {
     print "===== [WINDOW START " strftime("%Y-%m-%d %H:%M:%S", now) "] =====" >> f
     close(f)
   }
+
+  exclude_re = ""
+
+  # 제외 패턴 파일 읽어서 하나의 OR 정규식으로 결합
+  if (exfile != "") {
+    while ((getline line < exfile) > 0) {
+      sub(/\r$/, "", line)        # CR 제거
+      if (line ~ /^#/ || line ~ /^[[:space:]]*$/) continue
+      
+      # 제외 파일의 한 줄을 "문자 그대로" 매칭하도록 정규식 특수문자 이스케이프
+      gsub(/[][(){}.^$*+?|\\-]/, "\\\\&", line)
+
+      # OR 정규식으로 결합
+      exclude_re = (exclude_re == "" ? line : exclude_re "|" line)
+    }
+    close(exfile)
+    exclude_re = "(" exclude_re ")"  # 최종적으로 괄호로 감싸기
+  }
   
   # 창이 열려있고 && 오류 패턴이 일치할 때
-  if (now <= window_end && $0 ~ err_pat) {
+  if (now <= window_end && $0 ~ err_pat && (exclude_re == "" || $0 !~ exclude_re)) {
     f = outFile(now)
-    print "----- Detected at " strftime("%Y-%m-%d %H:%M:%S", now) " -----" > "/dev/stderr"
     print "----- [" strftime("%Y-%m-%d %H:%M:%S") "] DETECTED -----" >> f
     print $0 >> f
 
