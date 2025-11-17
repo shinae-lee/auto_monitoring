@@ -1,0 +1,46 @@
+# --- Python 기본 ---
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+
+# 패키지 메타
+*.egg-info/
+*.egg
+dist/
+build/
+
+# --- 가상환경 ---
+.venv/
+venv/
+env/
+ENV/
+
+# --- IDE / 에디터 ---
+.vscode/
+.idea/
+*.code-workspace
+
+# --- OS 파일 ---
+.DS_Store
+Thumbs.db
+
+# --- 캐시 / 도구 ---
+.pytest_cache/
+.mypy_cache/
+.cache/
+.coverage
+htmlcov/
+
+# --- 로그 ---
+logs/
+*.log
+
+# --- 환경변수 / 비밀정보 ---
+.env
+.env.*
+*.env
+
+# --- Docker 빌드 산출물(있다면) ---
+docker-compose.override.yml
