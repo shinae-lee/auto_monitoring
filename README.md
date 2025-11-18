@@ -8,4 +8,4 @@ source ./.venv/Scripts/activate
 pip install -r requirements.txt
 
 ### fast api 서버 실행
-uvicorn main:app (--reload)
+uvicorn app.main:app (--reload)
