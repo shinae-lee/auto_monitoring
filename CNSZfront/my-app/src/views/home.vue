@@ -6,7 +6,6 @@
         :key="index" 
         class="post"
       >
-        <img :src="post.image" alt="Post Image" class="post-image" />
         <div class="post-content">
           <h2 class="post-title">{{ post.title }}</h2>
           <p class="post-description">{{ post.description }}</p>
@@ -16,31 +15,29 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: "Home",
-  data() {
-    return {
-      posts: [
-        {
-          title: "첫 번째 게시물",
-          description: "이것은 첫 번째 게시물입니다.",
-          image: "https://via.placeholder.com/600x400",
-        },
-        {
-          title: "두 번째 게시물",
-          description: "이것은 두 번째 게시물입니다.",
-          image: "https://via.placeholder.com/600x400",
-        },
-        {
-          title: "세 번째 게시물",
-          description: "이것은 세 번째 게시물입니다.",
-          image: "https://via.placeholder.com/600x400",
-        },
-      ],
-    };
-  },
-};
+<script setup lang="ts">
+import {ref, onMounted} from 'vue'
+import {fetchRootMessage} from '@/api/myApi'
+
+type Post = {
+  title: string;
+  description: string;
+}
+
+const posts = ref<Post[]>([])
+
+onMounted(async () => {
+  try {
+    const data = await fetchRootMessage()
+    posts.value.push({
+      title: data.title,
+      description: data.description
+    })
+  } catch (error) {
+    console.error("Error fetching root message:", error)
+  }
+})
+
 </script>
 
 <style scoped>
