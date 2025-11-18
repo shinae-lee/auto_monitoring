@@ -9,3 +9,6 @@ pip install -r requirements.txt
 
 ### fast api 서버 실행
 uvicorn app.main:app (--reload)
+
+### vue 서버 실행
+npm run dev
