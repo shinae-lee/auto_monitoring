@@ -6,3 +6,6 @@ source ./.venv/Scripts/activate
 
 ### 패키지 설치
 pip install -r requirements.txt
+
+### fast api 서버 실행
+uvicorn main:app (--reload)
