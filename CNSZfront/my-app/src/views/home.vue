@@ -33,6 +33,8 @@ onMounted(async () => {
       title: data.title,
       description: data.description
     })
+
+    console.log("Fetched root message:", data)
   } catch (error) {
     console.error("Error fetching root message:", error)
   }
